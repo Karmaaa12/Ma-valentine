@@ -16,6 +16,26 @@
         .font-sans { font-family: 'Lato', sans-serif; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+
+        /* Styles personnalisés pour le curseur (range) */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #f43f5e;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+            border: 2px solid white;
+            margin-top: -10px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e7e5e4;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body class="bg-stone-50 overflow-hidden">
@@ -39,13 +59,12 @@
                 excitementTitle: "Ton niveau d'excitation ?"
             },
             resultGifs: {
-                low: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/9Y5BbDSkSTiY8/giphy.gif",
-                medium: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/ICOgUNoMPvG24/giphy.gif",
-                high: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/5Govl7UCWfFao/giphy.gif"
+                low: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/9Y5BbDSkSTiY8/giphy.gif", // Triste
+                medium: "https://media.tenor.com/NFAZkuLYdqwAAAAi/%EB%AA%A8%EB%AA%A8%EC%B0%8C-%ED%8C%94%EC%A7%9D%ED%8C%94%EC%A7%9D.gif$0", // Chat qui danse (Bien)
+                high: "https://media1.tenor.com/m/58h1A5y0UCcAAAAC/cat-cat-jumping.gif$0." // Explosion de joie (Légendaire)
             }
         };
 
-        // Composant Icône sécurisé pour Lucide en environnement CDN
         const LucideIcon = ({ name, size = 24, className = "" }) => {
             useEffect(() => {
                 if (window.lucide) {
@@ -111,7 +130,7 @@
 
             const activityOptions = [
                 { id: "act-1", src: "https://i.ibb.co/pjn949mN/Patchik.jpg", title: "Se patchiker" },
-                { id: "act-2", src: "https://m.media-amazon.com/images/I/81OAL9gnS7L._AC_SL1500_.jpg", title: "Regarder Le Roi Lion" }
+                { id: "act-2", src: "https://i.ibb.co/wrzR6mg6/2908996.jpg", title: "Regarder un film" }
             ];
 
             const nextPage = () => setCurrentPage(currentPage + 1);
@@ -165,13 +184,41 @@
                         {currentPage === 5 && (
                             <div className="flex flex-col items-center justify-center h-full text-center space-y-10 animate-fadeIn w-full max-w-2xl mx-auto px-4">
                                 <h2 className="text-4xl font-serif">{CONFIG.texts.excitementTitle}</h2>
-                                <input type="range" min="0" max="10" step="1" value={excitementLevel} onChange={(e) => setExcitementLevel(parseInt(e.target.value))} className="w-full h-4 bg-stone-200 rounded-full appearance-none cursor-pointer accent-rose-500" />
+                                
+                                <div className="w-full relative py-8">
+                                    <div 
+                                        className="absolute top-0 px-3 py-1 bg-rose-500 text-white rounded-lg font-bold shadow-md transform -translate-x-1/2 transition-all duration-150"
+                                        style={{ left: `${excitementLevel * 10}%` }}
+                                    >
+                                        {excitementLevel}/10
+                                    </div>
+                                    
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="10" 
+                                        step="1" 
+                                        value={excitementLevel} 
+                                        onChange={(e) => setExcitementLevel(parseInt(e.target.value))} 
+                                        className="w-full h-4 bg-stone-200 rounded-full appearance-none cursor-pointer accent-rose-500" 
+                                    />
+                                    
+                                    <div className="flex justify-between mt-4 text-stone-400 font-serif italic">
+                                        <span>Pas trop...</span>
+                                        <span>Impatiente !</span>
+                                    </div>
+                                </div>
+
                                 <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-100 mt-8 w-full max-w-sm">
-                                    <img src={excitementLevel < 4 ? CONFIG.resultGifs.low : excitementLevel < 9 ? CONFIG.resultGifs.medium : CONFIG.resultGifs.high} className="w-48 h-48 mx-auto mb-4 object-contain" />
-                                    <p className="text-stone-600 font-serif italic text-lg">
+                                    <img 
+                                        src={excitementLevel < 4 ? CONFIG.resultGifs.low : excitementLevel < 9 ? CONFIG.resultGifs.medium : CONFIG.resultGifs.high} 
+                                        className="w-48 h-48 mx-auto mb-4 object-contain rounded-lg" 
+                                    />
+                                    <p className="text-stone-600 font-serif italic text-lg h-16 flex items-center justify-center">
                                         {excitementLevel < 5 ? "Oh, je vais devoir faire des efforts..." : excitementLevel < 9 ? "Ça s'annonce bien !" : "Ça va être légendaire ! ✨"}
                                     </p>
                                 </div>
+                                <div className="text-stone-400 text-sm italic">À très bientôt ❤️</div>
                             </div>
                         )}
                     </main>
