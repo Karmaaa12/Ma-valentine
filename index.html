@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Valentine Champêtre</title>
+    <!-- Chargement des bibliothèques nécessaires -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Lato', sans-serif; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-stone-50 overflow-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, createElement } = React;
+
+        const CONFIG = {
+            names: { recipient: "Ma très chère..." },
+            introGifUrl: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1z/c76IJLufpNwSULPk77/giphy.gif",
+            successGifUrl: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2Z6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KztT2c4u8mYYUiMKdJ/giphy.gif",
+            texts: {
+                question: "Voudrais-tu me faire l'honneur d'être ma Valentine ?",
+                yesButton: "Oui 🥰",
+                noButton: "Non 😵",
+                dateText: "Quand es-tu disponible ?",
+                dateButton: "14 Février 2026 à 19h00",
+                foodTitle: "Ce que je te propose de déguster...",
+                activityTitle: "Et pour nous amuser...",
+                excitementTitle: "Ton niveau d'excitation ?"
+            },
+            resultGifs: {
+                low: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/9Y5BbDSkSTiY8/giphy.gif",
+                medium: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/ICOgUNoMPvG24/giphy.gif",
+                high: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY5cXA0eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6Z3Z4bmZ6eXp6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/5Govl7UCWfFao/giphy.gif"
+            }
+        };
+
+        // Composant Icône sécurisé pour Lucide en environnement CDN
+        const LucideIcon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
+
+        const FixedGallerySection = ({ title, iconName, images, onNext }) => {
+            const [selectedId, setSelectedId] = useState(null);
+
+            const handleCardClick = (id) => {
+                if (selectedId) return;
+                setSelectedId(id);
+                setTimeout(() => onNext(), 800);
+            };
+
+            return (
+                <div className="flex flex-col items-center h-full w-full max-w-4xl mx-auto animate-fadeIn py-8 overflow-y-auto">
+                    <div className="flex items-center gap-3 mb-6">
+                        <LucideIcon name={iconName} size={32} className="text-green-700" />
+                        <h2 className="text-3xl font-serif text-stone-800">{title}</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-2xl px-4">
+                        {images.map((img) => (
+                            <div key={img.id} onClick={() => handleCardClick(img.id)} className={`relative bg-white p-4 rounded-2xl shadow-md transition-all duration-300 transform cursor-pointer ${selectedId === img.id ? 'ring-4 ring-rose-400 scale-105' : 'hover:-translate-y-1'}`}>
+                                {selectedId === img.id && (
+                                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 rounded-2xl animate-fadeIn">
+                                        <LucideIcon name="heart" size={64} className="text-rose-500 fill-rose-500 animate-bounce" />
+                                    </div>
+                                )}
+                                <div className="overflow-hidden rounded-xl h-64 bg-stone-100">
+                                    <img src={img.src} alt={img.title} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="mt-4 text-center text-xl font-serif italic text-stone-700">{img.title}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState(0);
+            const [noCount, setNoCount] = useState(0);
+            const [yesScale, setYesScale] = useState(1);
+            const [excitementLevel, setExcitementLevel] = useState(5);
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [currentPage]);
+
+            const phrases = ["Non 😵", "Tu es sûre ?", "Vraiment ?", "Allez...", "Pense aux chocolats !", "Dernière chance !"];
+
+            const foodOptions = [
+                { id: "food-1", src: "https://i.ibb.co/jvmhrBRZ/Moi.jpg", title: "Moi" },
+                { id: "food-2", src: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=600", title: "Pizza" }
+            ];
+
+            const activityOptions = [
+                { id: "act-1", src: "https://i.ibb.co/pjn949mN/Patchik.jpg", title: "Se patchiker" },
+                { id: "act-2", src: "https://m.media-amazon.com/images/I/81OAL9gnS7L._AC_SL1500_.jpg", title: "Regarder Le Roi Lion" }
+            ];
+
+            const nextPage = () => setCurrentPage(currentPage + 1);
+
+            return (
+                <div className="min-h-screen bg-stone-50 text-stone-800 font-sans selection:bg-rose-200">
+                    <main className="relative z-10 w-full h-screen flex flex-col p-4">
+                        {currentPage === 0 && (
+                            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fadeIn">
+                                <div className="text-stone-500 font-serif italic">{CONFIG.names.recipient}</div>
+                                <img src={CONFIG.introGifUrl} className="w-64 h-64 object-contain rounded-2xl shadow-md" />
+                                <h1 className="text-3xl font-serif px-4">{CONFIG.texts.question}</h1>
+                                <div className="flex gap-4 mt-8 relative h-20 items-center justify-center w-full">
+                                    <button onClick={nextPage} style={{ transform: `scale(${yesScale})` }} className="bg-rose-500 text-white font-bold py-3 px-8 rounded-full shadow-lg z-10 transition-transform">
+                                        {CONFIG.texts.yesButton}
+                                    </button>
+                                    <button 
+                                        onClick={() => { setNoCount(noCount + 1); setYesScale(yesScale * 1.3); }} 
+                                        className="bg-stone-300 py-3 px-8 rounded-full transition-all" 
+                                        style={{ 
+                                            position: noCount > 1 ? 'absolute' : 'relative', 
+                                            left: noCount > 1 ? (Math.random() * 60 + 20) + '%' : 'auto',
+                                            top: noCount > 1 ? (Math.random() * 40 + 30) + '%' : 'auto'
+                                        }}
+                                    >
+                                        {phrases[Math.min(noCount, phrases.length - 1)]}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        {currentPage === 1 && (
+                            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fadeIn">
+                                <h2 className="text-3xl font-serif text-rose-600">C'est un OUI ! ❤️</h2>
+                                <img src={CONFIG.successGifUrl} className="w-full max-w-md rounded-lg shadow-xl" />
+                                <button onClick={nextPage} className="flex items-center gap-2 text-stone-500 hover:text-stone-800">
+                                    La suite <LucideIcon name="arrow-right" size={20}/>
+                                </button>
+                            </div>
+                        )}
+                        {currentPage === 2 && (
+                            <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fadeIn">
+                                <h2 className="text-4xl font-serif">{CONFIG.texts.dateText}</h2>
+                                <button onClick={nextPage} className="bg-white border-2 border-stone-200 p-8 rounded-2xl shadow-sm hover:border-rose-300 transition-colors">
+                                    <LucideIcon name="calendar" size={48} className="text-rose-400 mx-auto mb-4" />
+                                    <span className="text-2xl font-serif">{CONFIG.texts.dateButton}</span>
+                                </button>
+                            </div>
+                        )}
+                        {currentPage === 3 && <FixedGallerySection title={CONFIG.texts.foodTitle} iconName="utensils" images={foodOptions} onNext={nextPage} />}
+                        {currentPage === 4 && <FixedGallerySection title={CONFIG.texts.activityTitle} iconName="party-popper" images={activityOptions} onNext={nextPage} />}
+                        {currentPage === 5 && (
+                            <div className="flex flex-col items-center justify-center h-full text-center space-y-10 animate-fadeIn w-full max-w-2xl mx-auto px-4">
+                                <h2 className="text-4xl font-serif">{CONFIG.texts.excitementTitle}</h2>
+                                <input type="range" min="0" max="10" step="1" value={excitementLevel} onChange={(e) => setExcitementLevel(parseInt(e.target.value))} className="w-full h-4 bg-stone-200 rounded-full appearance-none cursor-pointer accent-rose-500" />
+                                <div className="bg-white p-6 rounded-xl shadow-lg border border-stone-100 mt-8 w-full max-w-sm">
+                                    <img src={excitementLevel < 4 ? CONFIG.resultGifs.low : excitementLevel < 9 ? CONFIG.resultGifs.medium : CONFIG.resultGifs.high} className="w-48 h-48 mx-auto mb-4 object-contain" />
+                                    <p className="text-stone-600 font-serif italic text-lg">
+                                        {excitementLevel < 5 ? "Oh, je vais devoir faire des efforts..." : excitementLevel < 9 ? "Ça s'annonce bien !" : "Ça va être légendaire ! ✨"}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
